@@ -17,7 +17,6 @@ if(args[3] == nil or tonumber(args[3]) == nil) then
 end
 
 function harvest()
-    robot.forward()
     robot.swingDown()
     robot.down()
     robot.suckDown()
@@ -26,7 +25,10 @@ end
 
 function harvestRow()
     for i = 1, length do
-        harvest()
+        robot.forward()
+        if robot.detectDown() then
+            harvest()
+        end
     end
 end
 
