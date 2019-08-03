@@ -1,33 +1,32 @@
 local component = require("component")
 local capacitor = component.ie_hv_capacitor
-local rs = component.redstone
 local sides = require("sides")
-local sleepTime = 20
+local generator = component.ie_diesel_generator
+local sleepTime = 15
 
 function getCapacitorLevel()
     return ((capacitor.getEnergyStored() / capacitor.getMaxEnergyStored()) * 100)
 end
 
-function turnGeneratorOn()
-    rs.setOutput(sides.back, 0)
-end
-
-function turnGeneratorOff()
-    rs.setOutput(sides.back, 15)
-end
-
 function main()
     local isGeneratorOn = false
-    turnGeneratorOff()
+    generator.enableComputerControl(true)
     while true do
         local currentPower = getCapacitorLevel()
+        local generatorBalance = generator.getTankInfo().amount
         os.execute("clear")
         print("Current Power: " .. tostring(currentPower) .. "%")
+        print("Current Tank Level: " .. tostring(generatorBalance) .. "mb")
+        if(isGeneratorOn) then
+            print("Generator is online.")
+        else
+            print("Generator is offline.")
+        end
         if(currentPower < 40 and isGeneratorOn == false) then
-            turnGeneratorOn()
+            generator.setEnabled(true)
             isGeneratorOn = true
         elseif (currentPower > 90 and isGeneratorOn) then
-            turnGeneratorOff()
+            generator.setEnabled(false)
             isGeneratorOn = false
         end
         os.sleep(sleepTime)
