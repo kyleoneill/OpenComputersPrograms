@@ -1,6 +1,5 @@
 local component = require("component")
 local capacitor = component.ie_hv_capacitor
-local sides = require("sides")
 local generator = component.ie_diesel_generator
 local sleepTime = 15
 
@@ -18,9 +17,9 @@ function main()
         print("Current Power: " .. tostring(currentPower) .. "%")
         print("Current Tank Level: " .. tostring(generatorBalance) .. "mb")
         if(isGeneratorOn) then
-            print("Generator is online.")
+            print("Generator Status: Online")
         else
-            print("Generator is offline.")
+            print("Generator Status: Offline")
         end
         if(currentPower < 40 and isGeneratorOn == false) then
             generator.setEnabled(true)

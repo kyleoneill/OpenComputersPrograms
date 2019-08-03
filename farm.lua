@@ -1,8 +1,11 @@
 local robot = require("robot")
+local component = require("component")
+local sides = require("sides")
 local args = {...}
 local width = args[1]
 local length = args[2]
 local sleepSeconds = args[3]
+local crop = args[4]
 
 if(args[1] == nil or tonumber(args[1]) == nil) then
     error("First arg must be the width of the farm.")
@@ -16,18 +19,36 @@ if(args[3] == nil or tonumber(args[3]) == nil) then
     error("Third arg must be the time to sleep, in seconds, between cycles.")
 end
 
-function harvest()
+if(args[4] == nil) then
+    error("Fourth arg must be the crop type.")
+end
+
+function harvestHemp()
     robot.swingDown()
     robot.down()
     robot.suckDown()
     robot.up()
 end
 
+function harvestPotato()
+    local geo = component.geolyzer
+    local potatoInfo = geo.analyze(sides.bottom)
+    if(potatoInfo["growth"] == 1.0) then
+        robot.swingDown()
+        robot.suckDown()
+        robot.placeDown()
+    end
+end
+
 function harvestRow()
     for i = 1, length do
         robot.forward()
         if robot.detectDown() then
-            harvest()
+            if(crop == "hemp") then
+                harvestHemp()
+            elseif(crop == "potato") then
+                harvestPotato()
+            end
         end
     end
 end
@@ -58,10 +79,14 @@ function emptyInventory()
 end
 
 function moveToChest()
-    for i = 1, length + 1 do
-        robot.forward()
+    if(width % 2 ~= 0) then
+        for i = 1, length + 1 do
+            robot.forward()
+        end
+        robot.turnRight()
+    else
+        robot.turnLeft() 
     end
-    robot.turnRight()
     for i = 1, width - 1 do
         robot.forward()
     end
@@ -72,7 +97,7 @@ end
 
 function main()
     os.execute("clear")
-    print("I'm a happy farmer!")
+    print("I'm a happy " .. crop .. " farmer!")
     local turnRight
     while true do
         turnRight = true
