@@ -10,6 +10,7 @@ end
 function main()
     local isGeneratorOn = false
     generator.enableComputerControl(true)
+    generator.setEnabled(false)
     while true do
         local currentPower = getCapacitorLevel()
         local generatorBalance = generator.getTankInfo().amount
